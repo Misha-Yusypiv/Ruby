@@ -1,0 +1,281 @@
+№1
+require File.expand_path(File.dirname(__FILE__) + '/neo')
+
+class AboutArrayAssignment < Neo::Koan
+  def test_non_parallel_assignment
+    names = ["John", "Smith"]
+    assert_equal(["John", "Smith"], names)
+  end
+
+  def test_parallel_assignments
+    first_name, last_name = ["John", "Smith"]
+    assert_equal "John", first_name
+    assert_equal "Smith", last_name
+  end
+
+  def test_parallel_assignments_with_extra_values
+    first_name, last_name = ["John", "Smith", "III"]
+    assert_equal "John", first_name
+    assert_equal "Smith", last_name
+  end
+
+  def test_parallel_assignments_with_splat_operator
+    first_name, *last_name = ["John", "Smith", "III"]
+    assert_equal "John", first_name
+    assert_equal ["Smith","III"], last_name
+  end
+
+  def test_parallel_assignments_with_too_few_values
+    first_name, last_name = ["Cher"]
+    assert_equal "Cher", first_name
+    assert_equal nil, last_name
+  end
+
+  def test_parallel_assignments_with_subarrays
+    first_name, last_name = [["Willie", "Rae"], "Johnson"]
+    assert_equal ["Willie", "Rae"], first_name
+    assert_equal "Johnson", last_name
+  end
+
+  def test_parallel_assignment_with_one_variable
+    first_name, = ["John", "Smith"]
+    assert_equal "John", first_name
+  end
+
+  def test_swapping_with_parallel_assignment
+    first_name = "Roy"
+    last_name = "Rob"
+    first_name, last_name = last_name, first_name
+    assert_equal 'Rob', first_name
+    assert_equal 'Roy', last_name
+  end
+end
+
+№2
+require File.expand_path(File.dirname(__FILE__) + '/neo')
+
+class AboutArrays < Neo::Koan
+  def test_creating_arrays
+    empty_array = Array.new
+    assert_equal Array, empty_array.class
+    assert_equal 0, empty_array.size
+  end
+
+  def test_array_literals
+    array = Array.new
+    assert_equal [], array
+
+    array[0] = 1
+    assert_equal [1], array
+
+    array[1] = 2
+    assert_equal [1, 2], array
+
+    array << 333
+    assert_equal [1, 2, 333], array
+  end
+
+  def test_accessing_array_elements
+    array = [:peanut, :butter, :and, :jelly]
+
+    assert_equal :peanut, array[0]
+    assert_equal :peanut, array.first
+    assert_equal :jelly, array[3]
+    assert_equal :jelly, array.last
+    assert_equal :jelly, array[-1]
+    assert_equal :butter, array[-3]
+  end
+
+  def test_slicing_arrays
+    array = [:peanut, :butter, :and, :jelly]
+
+    assert_equal [:peanut], array[0,1]
+    assert_equal [:peanut, :butter], array[0,2]
+    assert_equal [:and, :jelly], array[2,2]
+    assert_equal [:and, :jelly], array[2,20]
+    assert_equal [], array[4,0]
+    assert_equal [], array[4,100]
+    assert_equal nil, array[5,0]
+  end
+
+  def test_arrays_and_ranges
+    assert_equal Range, (1..5).class
+    assert_not_equal [1,2,3,4,5], (1..5)
+    assert_equal [1,2,3,4,5], (1..5).to_a
+    assert_equal [1,2,3,4], (1...5).to_a
+  end
+
+  def test_slicing_with_ranges
+    array = [:peanut, :butter, :and, :jelly]
+
+    assert_equal [:peanut, :butter, :and], array[0..2]
+    assert_equal [:peanut, :butter], array[0...2]
+    assert_equal [:and, :jelly], array[2..-1]
+  end
+
+  def test_pushing_and_popping_arrays
+    array = [1,2]
+    array.push(:last)
+
+    assert_equal [1, 2, :last], array
+
+    popped_value = array.pop
+    assert_equal :last, popped_value
+    assert_equal [1, 2], array
+  end
+
+  def test_shifting_arrays
+    array = [1,2]
+    array.unshift(:first)
+
+    assert_equal [:first, 1, 2], array
+
+    shifted_value = array.shift
+    assert_equal :first, shifted_value
+    assert_equal [1, 2], array
+  end
+end
+
+№3
+#!/usr/bin/env ruby
+# -*- ruby -*-
+
+require File.expand_path(File.dirname(__FILE__) + '/neo')
+
+class AboutAsserts < Neo::Koan
+
+  # We shall contemplate truth by testing reality, via asserts.
+  def test_assert_truth
+    assert true                 # This should be true
+    if false
+      assert false                # This should be true
+    end
+  end
+
+  # Enlightenment may be more easily achieved with appropriate
+  # messages.
+  def test_assert_with_message
+    assert true, "This should be true -- Please fix this"
+    if false
+      assert false, "This should be true -- Please fix this"
+    end
+  end
+
+  # To understand reality, we must compare our expectations against
+  # reality.
+  def test_assert_equality
+    expected_value = 2
+    actual_value = 1 + 1
+
+    assert expected_value == actual_value
+  end
+
+  # Some ways of asserting equality are better than others.
+  def test_a_better_way_of_asserting_equality
+    expected_value = 2
+    actual_value = 1 + 1
+
+    assert_equal expected_value, actual_value
+  end
+
+  # Sometimes we will ask you to fill in the values
+  def test_fill_in_values
+    assert_equal 2, 1 + 1
+  end
+end
+№4
+
+class AboutBlocks < Neo::Koan
+  def method_with_block
+    result = yield
+    result
+  end
+
+  def test_methods_can_take_blocks
+    yielded_result = method_with_block { 1 + 2 }
+    assert_equal __(3), yielded_result
+  end
+
+  def test_blocks_can_be_defined_with_do_end_too
+    yielded_result = method_with_block do 1 + 2 end
+    assert_equal __(3), yielded_result
+  end
+
+  # ------------------------------------------------------------------
+
+  def method_with_block_arguments
+    yield("Jim")
+  end
+
+  def test_blocks_can_take_arguments
+    method_with_block_arguments do |argument|
+      assert_equal __("Jim"), argument
+    end
+  end
+
+  # ------------------------------------------------------------------
+
+  def many_yields
+    yield(:peanut)
+    yield(:butter)
+    yield(:and)
+    yield(:jelly)
+  end
+
+  def test_methods_can_call_yield_many_times
+    result = []
+    many_yields { |item| result << item }
+    assert_equal __([:peanut, :butter, :and, :jelly]), result
+  end
+
+  # ------------------------------------------------------------------
+
+  def yield_tester
+    if block_given?
+      yield
+    else
+      :no_block
+    end
+  end
+
+  def test_methods_can_see_if_they_have_been_called_with_a_block
+    assert_equal __(:with_block), yield_tester { :with_block }
+    assert_equal __(:no_block), yield_tester
+  end
+
+  # ------------------------------------------------------------------
+
+  def test_block_can_affect_variables_in_the_code_where_they_are_created
+    value = :initial_value
+    method_with_block { value = :modified_in_a_block }
+    assert_equal __(:modified_in_a_block), value
+  end
+
+  def test_blocks_can_be_assigned_to_variables_and_called_explicitly
+    add_one = lambda { |n| n + 1 }
+    assert_equal __(11), add_one.call(10)
+
+    # Alternative calling syntax
+    assert_equal __(11), add_one[10]
+  end
+
+  def test_stand_alone_blocks_can_be_passed_to_methods_expecting_blocks
+    make_upper = lambda { |n| n.upcase }
+    result = method_with_block_arguments(&make_upper)
+    assert_equal __("JIM"), result
+  end
+
+  # ------------------------------------------------------------------
+
+  def method_with_explicit_block(&block)
+    block.call(10)
+  end
+
+  def test_methods_can_take_an_explicit_block_argument
+    assert_equal __(20), method_with_explicit_block { |n| n * 2 }
+
+    add_one = lambda { |n| n + 1 }
+    assert_equal __(11), method_with_explicit_block(&add_one)
+  end
+
+end
